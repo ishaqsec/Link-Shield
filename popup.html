@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Link Shield — Malicious URL Detector</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="app-container" id="appContainer">
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="brand-lockup" id="brandHeaderTrigger" title="Click for About & Author Info">
+        <img src="assets/ui/brand_shield.png" alt="Link Shield Logo" class="brand-logo" />
+        <div class="brand-text">
+          <h1 class="brand-title"><span class="brand-link">Link</span> <span class="brand-shield">Shield</span></h1>
+          <p class="brand-subtitle">Malicious URL Detector</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Theme Toggle Button (Sun in Light Mode, Moon in Dark Mode) -->
+        <button class="icon-btn" id="themeToggleBtn" type="button" title="Toggle Light / Dark Theme" aria-label="Toggle Theme">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4.5" fill="currentColor"></circle>
+            <line x1="12" y1="2" x2="12" y2="4.5"></line>
+            <line x1="12" y1="19.5" x2="12" y2="22"></line>
+            <line x1="4.93" y1="4.93" x2="6.7" y2="6.7"></line>
+            <line x1="17.3" y1="17.3" x2="19.07" y2="19.07"></line>
+            <line x1="2" y1="12" x2="4.5" y2="12"></line>
+            <line x1="19.5" y1="12" x2="22" y2="12"></line>
+            <line x1="4.93" y1="19.07" x2="6.7" y2="17.3"></line>
+            <line x1="17.3" y1="6.7" x2="19.07" y2="4.93"></line>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+
+        <!-- Settings Button -->
+        <button class="icon-btn" id="settingsBtn" type="button" title="Protection Settings" aria-label="Settings">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+          </svg>
+        </button>
+
+        <!-- More Menu Button -->
+        <button class="icon-btn" id="moreMenuBtn" type="button" title="More Options & Quick Tests" aria-label="More Options">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <circle cx="12" cy="5" r="2.1"/>
+            <circle cx="12" cy="12" r="2.1"/>
+            <circle cx="12" cy="19" r="2.1"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Dropdown Menu for More Options -->
+      <div class="dropdown-menu hidden" id="moreDropdown">
+        <div class="dropdown-section-title">Quick Test Samples</div>
+        <button class="dropdown-item" data-test-url="https://www.google.com/">
+          <span class="dot dot-safe"></span> Test Safe URL (google.com)
+        </button>
+        <button class="dropdown-item" data-test-url="http://bit.ly/3xYzAbC-redirect">
+          <span class="dot dot-warn"></span> Test Suspicious URL (Shortener/HTTP)
+        </button>
+        <button class="dropdown-item" data-test-url="http://paypal.com.secure-login-update.tk/verify-account.exe">
+          <span class="dot dot-danger"></span> Test Malicious Phishing URL
+        </button>
+        <div class="dropdown-divider"></div>
+        <button class="dropdown-item" id="openHistoryBtn">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+          View Scan History
+        </button>
+        <button class="dropdown-item" id="openReportBtn">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Detailed Threat Breakdown
+        </button>
+        <button class="dropdown-item" id="exportReportBtn">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export Scan JSON
+        </button>
+      </div>
+    </header>
+
+    <!-- Current Website Safety Card -->
+    <section class="safety-card status-safe" id="safetyCard" aria-live="polite">
+      <div class="shield-visual-wrap" id="shieldVisualTrigger" title="Click for Security Score Summary">
+        <img
+          src="assets/ui/07_shield_safe_light.png"
+          alt="Safety Status Shield"
+          class="shield-illustration"
+          id="shieldIllustration"
+        />
+      </div>
+
+      <div class="safety-info">
+        <div class="current-site-label-row">
+          <span class="status-dot" id="currentSiteDot"></span>
+          <span class="current-site-label" id="websiteContextLabel">Current Website</span>
+          <span class="icon-badge-preview" id="iconBadgePreview" title="Click for Live Extension Icon Status Info">ICON: OK</span>
+        </div>
+
+        <h2 class="host-title" id="displayHost">www.google.com</h2>
+
+        <div class="full-url-row">
+          <span class="full-url-text" id="displayFullUrl" title="https://www.google.com/">https://www.google.com/</span>
+          <button class="copy-url-btn" id="copyUrlBtn" type="button" title="Copy URL to clipboard" aria-label="Copy URL">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            <span class="copy-feedback hidden" id="copyFeedback">Copied</span>
+          </button>
+        </div>
+
+        <div class="verdict-row">
+          <div class="verdict-badge" id="statusBadgePill" title="Click to inspect verdict details">
+            <span class="verdict-icon" id="verdictIcon">✔</span>
+            <span class="verdict-label" id="verdictLabel">Safe</span>
+          </div>
+          <div class="verdict-divider"></div>
+          <div class="verdict-message" id="verdictMessageTrigger" title="Click to inspect detailed threat analysis">
+            <div class="verdict-headline" id="threatHeadline">No threats found</div>
+            <div class="verdict-subtext" id="threatSubtext">This website appears to be safe.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 Website Details Tiles Row (Clickable for Info PopUp) -->
+    <section class="details-grid" aria-label="Website Details">
+      <!-- Tile 1: HTTPS -->
+      <div class="detail-tile" data-tile-info="https" title="Click for HTTPS / SSL Encryption details">
+        <div class="tile-icon tile-icon-https" id="tileHttpsIcon">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm3 11c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>
+          </svg>
+        </div>
+        <div class="tile-text">
+          <span class="tile-label" id="tileHttpsLabel">HTTPS</span>
+          <span class="tile-value tile-value-secure" id="tileHttpsValue">Secure</span>
+        </div>
+      </div>
+
+      <!-- Tile 2: Domain -->
+      <div class="detail-tile" data-tile-info="domain" title="Click for Domain Reputation details">
+        <div class="tile-icon tile-icon-blue">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="9.5"/>
+            <ellipse cx="12" cy="12" rx="4.2" ry="9.5"/>
+            <line x1="2.8" y1="9" x2="21.2" y2="9"/>
+            <line x1="2.8" y1="15" x2="21.2" y2="15"/>
+          </svg>
+        </div>
+        <div class="tile-text">
+          <span class="tile-label">Domain</span>
+          <span class="tile-value" id="tileDomainValue">google.com</span>
+        </div>
+      </div>
+
+      <!-- Tile 3: Location -->
+      <div class="detail-tile" data-tile-info="location" title="Click for Server Geolocation details">
+        <div class="tile-icon tile-icon-blue">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"/>
+          </svg>
+        </div>
+        <div class="tile-text">
+          <span class="tile-label">Location</span>
+          <span class="tile-value" id="tileLocationValue">United States</span>
+        </div>
+      </div>
+
+      <!-- Tile 4: IP Address -->
+      <div class="detail-tile" data-tile-info="ip" title="Click for Network IP & DNS details">
+        <div class="tile-icon tile-icon-blue">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <rect x="3" y="4" width="18" height="4.5" rx="1.5"/>
+            <rect x="3" y="9.75" width="18" height="4.5" rx="1.5"/>
+            <rect x="3" y="15.5" width="18" height="4.5" rx="1.5"/>
+            <circle cx="6.2" cy="6.25" r="0.9" fill="#fff"/>
+            <circle cx="9.2" cy="6.25" r="0.9" fill="#fff"/>
+            <circle cx="6.2" cy="12" r="0.9" fill="#fff"/>
+            <circle cx="9.2" cy="12" r="0.9" fill="#fff"/>
+            <circle cx="6.2" cy="17.75" r="0.9" fill="#fff"/>
+            <circle cx="9.2" cy="17.75" r="0.9" fill="#fff"/>
+          </svg>
+        </div>
+        <div class="tile-text">
+          <span class="tile-label">IP Address</span>
+          <span class="tile-value" id="tileIpValue">142.250.72.14</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Action Tabs: Scan URL | Check Current Tab -->
+    <nav class="scan-tabs" role="tablist">
+      <button class="scan-tab active" id="tabScanUrl" role="tab" aria-selected="true" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="7"></circle>
+          <line x1="20" y1="20" x2="16.2" y2="16.2"></line>
+        </svg>
+        <span>Scan URL</span>
+      </button>
+
+      <button class="scan-tab" id="tabCheckCurrent" role="tab" aria-selected="false" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+        </svg>
+        <span>Check Current Tab</span>
+      </button>
+    </nav>
+
+    <!-- URL Input & Primary Scan Button -->
+    <section class="scanner-controls">
+      <div class="url-input-wrapper" id="urlInputWrapper">
+        <svg class="input-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+        </svg>
+        <input
+          type="text"
+          id="urlInput"
+          class="url-input"
+          placeholder="Enter a URL to scan (e.g. https://example.com)"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <button type="button" class="clear-input-btn hidden" id="clearInputBtn" title="Clear input" aria-label="Clear URL input">✕</button>
+      </div>
+
+      <button type="button" class="primary-scan-btn" id="scanUrlBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="7"></circle>
+          <line x1="20" y1="20" x2="16.2" y2="16.2"></line>
+        </svg>
+        <span id="scanBtnText">Scan URL</span>
+      </button>
+    </section>
+
+    <!-- 4 Feature Cards Row -->
+    <section class="features-grid" aria-label="Protection Capabilities">
+      <!-- Card 1: Detect -->
+      <button type="button" class="feature-card" data-pillar="detect" title="Click to inspect Phishing & Malware checks">
+        <div class="feature-icon-circle feature-circle-blue">
+          <svg class="feature-svg-shield-blue" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2L4 5.5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5.5L12 2zm-1.4 13.6L7.4 12.4l1.41-1.41 1.79 1.79 4.59-4.59L16.6 9.6l-6 6z"/>
+          </svg>
+        </div>
+        <div class="feature-title">Detect</div>
+        <div class="feature-desc">Phishing &amp;<br/>Malware links</div>
+      </button>
+
+      <!-- Card 2: Analyze -->
+      <button type="button" class="feature-card" data-pillar="analyze" title="Click to inspect Behavioral & Entropy heuristics">
+        <div class="feature-icon-circle feature-circle-purple">
+          <svg class="feature-svg-brain" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-2.04z"/>
+            <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-4.44-2.04z"/>
+          </svg>
+        </div>
+        <div class="feature-title">Analyze</div>
+        <div class="feature-desc">Suspicious<br/>behaviors</div>
+      </button>
+
+      <!-- Card 3: Real-time -->
+      <button type="button" class="feature-card" data-pillar="realtime" title="Click to inspect Real-time Threat Intelligence">
+        <div class="feature-icon-circle feature-circle-blue">
+          <svg class="feature-svg-db" viewBox="0 0 24 24" fill="currentColor">
+            <ellipse cx="12" cy="5" rx="7.5" ry="2.8"/>
+            <path d="M4.5 7.8v3.4c0 1.55 3.36 2.8 7.5 2.8s7.5-1.25 7.5-2.8V7.8c-1.65 1.15-4.4 1.8-7.5 1.8s-5.85-.65-7.5-1.8z"/>
+            <path d="M4.5 13.8v3.4c0 1.55 3.36 2.8 7.5 2.8s7.5-1.25 7.5-2.8v-3.4c-1.65 1.15-4.4 1.8-7.5 1.8s-5.85-.65-7.5-1.8z"/>
+          </svg>
+        </div>
+        <div class="feature-title">Real-time</div>
+        <div class="feature-desc">Threat<br/>intelligence</div>
+      </button>
+
+      <!-- Card 4: Stay Safe -->
+      <button type="button" class="feature-card" data-pillar="staysafe" title="Click to inspect SSL/TLS & Active Protection">
+        <div class="feature-icon-circle feature-circle-green">
+          <svg class="feature-svg-shield-green" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2L4 5.5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5.5L12 2zm-1.4 13.6L7.4 12.4l1.41-1.41 1.79 1.79 4.59-4.59L16.6 9.6l-6 6z"/>
+          </svg>
+        </div>
+        <div class="feature-title">Stay Safe</div>
+        <div class="feature-desc">Browse with<br/>confidence</div>
+      </button>
+    </section>
+
+    <!-- Footer Bar: Version & Author Attribution (Removed "Link Shield is protecting you") -->
+    <footer class="app-footer" id="footerInfoTrigger" title="Click for Extension & Author Info">
+      <div class="footer-left">
+        <svg class="footer-shield-icon" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2L4 5.5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5.5L12 2z" fill="#0066FF"/>
+          <path d="M12 4.2v16.1c3.45-1.05 6-4.88 6-8.71V6.85L12 4.2z" fill="#3B82F6" opacity="0.45"/>
+          <path d="M10.5 14.8L7.7 12l1.2-1.2 1.6 1.6 4.4-4.4 1.2 1.2-5.6 5.6z" fill="#FFFFFF"/>
+        </svg>
+        <span class="footer-author-text">by <strong>Muhammad Ishaq</strong></span>
+      </div>
+      <div class="footer-version">v1.0.0</div>
+    </footer>
+
+    <!-- Universal Floating Info PopUp (Opens on any tab/button click, auto-closes on outside click, has small close button) -->
+    <div class="info-popup-backdrop hidden" id="infoPopupBackdrop" role="dialog" aria-modal="true" aria-labelledby="infoPopupTitle">
+      <div class="info-popup-card" id="infoPopupCard">
+        <div class="info-popup-header">
+          <div class="info-popup-title-wrap">
+            <span class="info-popup-badge" id="infoPopupBadge">INFO</span>
+            <h3 class="info-popup-title" id="infoPopupTitle">Information</h3>
+          </div>
+          <button type="button" class="small-close-btn" id="infoPopupCloseBtn" title="Close" aria-label="Close popup">✕</button>
+        </div>
+        <div class="info-popup-body" id="infoPopupBody"></div>
+      </div>
+    </div>
+
+    <!-- Modal Overlay: Settings Panel (Also auto-closes on outside click + small close button) -->
+    <div class="info-popup-backdrop hidden" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsModalTitle">
+      <div class="info-popup-card" id="settingsModalCard">
+        <div class="info-popup-header">
+          <div class="info-popup-title-wrap">
+            <span class="info-popup-badge">CONFIG</span>
+            <h3 class="info-popup-title" id="settingsModalTitle">Link Shield Settings</h3>
+          </div>
+          <button type="button" class="small-close-btn" id="closeSettingsBtn" title="Close" aria-label="Close Settings">✕</button>
+        </div>
+        <div class="info-popup-body">
+          <label class="setting-row">
+            <div>
+              <div class="setting-name">Real-Time Toolbar Protection</div>
+              <div class="setting-sub">Show live status (OK / WARN / RISK) on extension icon</div>
+            </div>
+            <input type="checkbox" id="toggleProtection" checked />
+          </label>
+
+          <label class="setting-row">
+            <div>
+              <div class="setting-name">Strict Heuristic Mode</div>
+              <div class="setting-sub">Higher sensitivity for unencrypted HTTP &amp; uncommon TLDs</div>
+            </div>
+            <input type="checkbox" id="toggleStrictMode" />
+          </label>
+
+          <label class="setting-row">
+            <div>
+              <div class="setting-name">In-Page Threat Warning Banner</div>
+              <div class="setting-sub">Show alert banner when visiting suspicious or unsafe sites</div>
+            </div>
+            <input type="checkbox" id="toggleInPageBanner" checked />
+          </label>
+
+          <div class="setting-block">
+            <label class="setting-name" for="allowlistInput">Trusted Allowlist Domains (one per line)</label>
+            <textarea id="allowlistInput" class="setting-textarea" rows="2" placeholder="e.g. internal.mycompany.com"></textarea>
+          </div>
+
+          <div class="setting-block">
+            <label class="setting-name" for="blocklistInput">Custom Blocklist Domains (one per line)</label>
+            <textarea id="blocklistInput" class="setting-textarea" rows="2" placeholder="e.g. shady-tracker.xyz"></textarea>
+          </div>
+
+          <button type="button" class="primary-scan-btn modal-save-btn" id="saveSettingsBtn">Save Settings</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="detector.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

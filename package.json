@@ -1,0 +1,23 @@
+{
+  "name": "link-shield",
+  "version": "1.0.0",
+  "description": "Advanced real-time malicious URL detector, anti-phishing scanner, and threat intelligence browser extension (Manifest V3) with live toolbar status badge.",
+  "author": "Muhammad Ishaq",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "test": "node tests/detector.test.js"
+  },
+  "keywords": [
+    "chrome-extension",
+    "manifest-v3",
+    "malicious-url-detector",
+    "phishing-detection",
+    "cybersecurity",
+    "threat-intelligence",
+    "url-scanner",
+    "browser-security",
+    "anti-phishing",
+    "link-shield"
+  ]
+}
